@@ -1,0 +1,13 @@
+chapter7  
+vertex processing & drawing command
+
+vertex processing
+1. vertex shader input
+-버텍스 쉐이더 실행전 수행
+-입력을 구성하는 것이 목적
+
+glVertexAttribPointer를 통해 버텍스 속성에 대한 거의 모든것 설정가능
++저수준함수 
+glVertexAttribFormat();
+glVertexAttribBinding();
+glBindVertexBuffer(); 

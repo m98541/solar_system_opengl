@@ -1,0 +1,92 @@
+
+GLuint vboIdMax;
+GLuint* vboId;
+GLuint iboIdMax;
+GLuint* iboId;
+void CoreInitIBO(GLuint iboIdMaxSize);
+void CorePrepareIBO(GLuint id, const void* data, size_t size);
+void CoreTerminateIBO();
+
+void CoreInitVBO(GLuint vboIdMaxSize);
+void CorePrepareVBO(GLuint id, const void* data, size_t size);
+void CoreTerminateVBO();
+
+
+
+
+void CoreDrawFunc(void)
+{
+
+	GLuint locPos = 0;
+	GLuint locColor = 1;
+	GLuint locNorm = 2;
+	GLuint locTexCoord = 4;
+	GLuint locMaterialID = 5;
+
+	
+	//glVertexAttribPointer(locPos, 4, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*)0);
+	//glVertexAttribPointer(locColor, 4, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*)sizeof(vec4));
+	glVertexAttribFormat(locPos,4,GL_FLOAT,GL_FALSE,offsetof(vertex_t, pos));
+	glVertexAttribFormat(locColor,4, GL_FLOAT, GL_FALSE, offsetof(vertex_t, color));
+	glVertexAttribFormat(locNorm,4,GL_FLOAT,GL_FALSE,offsetof(vertex_t , norm));
+	glVertexAttribFormat(locTexCoord,2,GL_FLOAT,GL_FALSE,offsetof(vertex_t , tex_coord));
+	glVertexAttribIFormat(locMaterialID , 1 , GL_INT,offsetof(vertex_t , material_id));
+	
+	glEnableVertexAttribArray(locPos);
+	glEnableVertexAttribArray(locColor);
+
+	glVertexAttribBinding(locPos, QUAD_ID);
+	glVertexAttribBinding(locColor, QUAD_ID);
+	glVertexAttribBinding(locNorm, QUAD_ID);
+	glVertexAttribBinding(locTexCoord, QUAD_ID);
+	glVertexAttribBinding(locMaterialID, QUAD_ID);
+
+	glBindVertexBuffer(QUAD_ID ,vboId[QUAD_ID], 0 , sizeof(vertex_t));
+
+	glDrawElements(GL_TRIANGLES, 36,GL_UNSIGNED_SHORT , 0);
+
+	glFlush();
+}
+void CoreInitVBO(GLuint vboIdMaxSize)
+{
+	vboIdMax = vboIdMaxSize;
+	vboId = (GLuint*)malloc(sizeof(GLuint) * vboIdMax);
+	glGenBuffers(vboIdMax, vboId);
+}
+
+void CorePrepareVBO(GLuint id, const void* data, size_t size)
+{
+	glBindBuffer(GL_ARRAY_BUFFER, vboId[id]);
+	glBufferData(GL_ARRAY_BUFFER, 2 * size, NULL, GL_STATIC_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+
+}
+
+void CoreTerminateVBO()
+{
+	glDeleteBuffers(vboIdMax, vboId);
+	free(vboId);
+}
+
+
+
+void CoreInitIBO(GLuint iboIdMaxSize)
+{
+	iboIdMax = iboIdMaxSize;
+	iboId = (GLuint*)malloc(sizeof(GLuint) * iboIdMax);
+	glGenBuffers(iboIdMax, iboId);
+}
+
+void CorePrepareIBO(GLuint id, const void* data, size_t size)
+{
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId[id]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 2 * size, NULL, GL_STATIC_DRAW);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, size, data);
+
+}
+
+void CoreTerminateIBO()
+{
+	glDeleteBuffers(iboIdMax, iboId);
+	free(iboId);
+}
